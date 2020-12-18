@@ -1,227 +1,133 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-     <meta charset="UTF-8" />
+    <head>
+        <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quizz app</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap");
-      * {
-        box-sizzing:border-box;
+        <title>Drawing App</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap");
 
-      }
-      body {
-        background-color:#00ffff;
-        background-image: linear-gradient(315deg, #b8c6db 0%, #f5f7fa 100%);
-        display:flex;
-        align-item:center;
-        justify-content:center;
-        font-family:"Poppins",sans-serif;
-        margin:0;
-        min-height:300vh;
+* {
+    box-sizing: border-box;
 
+}
+body {
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
 
-      }
-      ul{
-        list-style-type:none;
-        padding:0;
-      }
-      ul li{
-        font-size:1.2rem;
-        margin:1rem 0;
-      }
-      ul li label{
-        cursor:pointer;
-      }
-      button{
-        background-color: #8e44ad;
-        border:solid;
-        color:white;
-        cursor:pointer;
-        display:block;
-        font-family:inherit
-        font-size:1.1rem;
-        width:100%;
-        padding:1.3rem;
+canvas {
+    border: 5px solid green ;
 
+}
+button{
+  color:red;
+  background-color:white;
+}
 
-      }
-      .quizstart{
-        background-color:#fff;
-        border-radius:10px;
-        box-shadow:0 0 10px 2px rgba(100,100,100,0.1);
-        overflow:hidden;
-        width:800px;
-        max-width:100%;
-      }
-      .quizhead{
-        padding:4rem;
-      }
-      button:hover{
-        background-color:#808080;
-      }
-      button:focus{
-        background-color:#32CD32;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="quizstart" id="quizapp">
-      <div class="quizhead">
-        <h3 id="que">Question</h3>
-        <ul>
-          <li>
-            <input
-               type="radio"
-               id="a"
-               name="ans"
-               class="ans"
-            />
-            <label id="a_t" for="a">Question</label>
-          </li>
-          <li>
-            <input
-                type="radio"
-                id="b"
-                name="ans"
-                class="ans"
-            />
-            <label id="b_t" for="b">Question</label>
-          </li>
-          <li>
-            <input 
-               type="radio"
-               id="c"
-               name="ans"
-               class="ans"
-            />
-            <label id="c_t" for="c">Question</label>
-          </li>
-          <li>
-            <input 
-              type="radio"
-              id="d"
-              name="ans"
-              class="ans"
-            />
-            <label id="d_t" for="d">Question</label>
-          </li>
-        </ul>
-      </div>
-      <button id="submit">Submit</button>
+</style>
+    </head>
+    <body>
+    <canvas id="canvas" width="1200" height="500"></canvas>
+    <div class="toolbox">
+    <button id="dec">-</button>
+    <span id="size">1</span>
+    <button class="inc" >+</button>
+    <input type="color" id="color">
+    <button id="clear">Erase</button>
     </div>
     <script>
-      const quizData=[
-        {
-          question: "What is the maximum possible length of an identifier?",a:"16",
-          b:"32",
-          c:"64",
-          d:"None of the Above",
-          correct:"d",
+      const canvas=document.getElementById("canvas");
+      const incbtn=document.getElementById("inc");
+      const decbtn=document.getElementById("dec");
+      const sizeEl = document.getElementById("size");
+      const colorEl = document.getElementById("color");
+      const clearEl = document.getElementById("clear");
+      const ctx = canvas.getContext("2d");
+      let size=30;
+      let isPressed=false;
+      let color="black";
+      let x=undefined;
+      let y=undefined;
 
-        },
-        {
-          question:"Who developed the Python language?",
-          a:"Zim Den",
-          b:"Guido van Rossum",
-          c:"Niene Stom",
-          d:"Wick van Rossum",
-          correct:"b",
-        },
-        {
-          question:"In which year was the Python language developed?",
-          a:"1995",
-          b:"1972",
-          c:"1981",
-          d:"1989",
-          correct:"d",
-        },
-        {
-          question:"In which language is Python written?",
-          a:"English",
-          b:"PHP",
-          c:"C",
-          d:"All of the above",
-          correct:"c",
-        },
-        {
-          question:"Which one of the following is the correct extension of the Python file?",
-          a:".py",
-          b:".python",
-          c:".p",
-          d:"None of these",
-          correct:"a",
-        },
-        
-      ];
-      const quiz=document.getElementById("quizapp");
-      const answerEls=document.querySelectorAll(".answer");
-      const questionE1=document.getElementById("que");
-      const a_t=document.getElementById("a_t");
-      const b_t=document.getElementById("b_t");
-      const c_t=document.getElementById("c_t");
-      const d_t=document.getElementById("d_t");
-      const submitBtn =document.getElementById("submit");
-      let currentQuiz=0;
-      let score=0;
+      canvas.addEventListener("mousedown",(e)=>{
+        isPressed=true;
 
+        x = e.offsetX;
+        y = e.offsetY;
 
-    
-loadQuiz();
-      
-      
-function loadQuiz() {
-    deselectAnswers();
+      });
+      canvas.addEventListener("mouseup", (e) => {
+    isPressed = false;
 
-    const currentQuizData = quizData[currentQuiz];
+    x = undefined;
+    y = undefined;
+});
+canvas.addEventListener("mousemove", (e) => {
+    if (isPressed) {
+        const x2 = e.offsetX;
+        const y2 = e.offsetY;
 
-    questionEl.innerText = currentQuizData.question;
-    a_text.innerText = currentQuizData.a;
-    b_text.innerText = currentQuizData.b;
-    c_text.innerText = currentQuizData.c;
-    d_text.innerText = currentQuizData.d;
-}
-
-function getSelected() {
-    let answer = undefined;
-
-    answerEls.forEach((answerEl) => {
-        if (answerEl.checked) {
-            answer = answerEl.id;
-        }
-    });
-
-    return answer;
-}
-
-function deselectAnswers() {
-    answerEls.forEach((answerEl) => {
-        answerEl.checked = false;
-    });
-}
-
-submitBtn.addEventListener("click", () => {
-    // check to see the answer
-    const answer = getSelected();
-
-    if (answer) {
-        if (answer === quizData[currentQuiz].correct) {
-            score++;
-        }
-
-        currentQuiz++;
-        if (currentQuiz < quizData.length) {
-            loadQuiz();
-        } else {
-            quiz.innerHTML = `
-                <h2>You answered correctly at ${score}/${quizData.length} questions.</h2>
-                
-                <button onclick="location.reload()">Reload</button>
-            `;
-        }
+        drawCircle(x2, y2);
+        drawLine(x, y, x2, y2);
+        x = x2;
+        y = y2;
     }
 });
-</script>
+function drawCircle(x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+}
 
+function drawLine(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size * 2;
+    ctx.stroke();
+}
+
+incbtn.addEventListener("click", () => {
+    size += 1;
+
+    if (size > 50) {
+        size = 50;
+    }
+
+    updateSizeOnScreen();
+});
+
+decbtn.addEventListener("click", () => {
+    size -= 5;
+
+    if (size < 5) {
+        size = 5;
+    }
+
+    updateSizeOnScreen();
+});
+
+colorEl.addEventListener("change", (e) => {
+    color = e.target.value;
+});
+
+clearEl.addEventListener("click", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+function updateSizeOnScreen() {
+    sizeEl.innerText = size;
+}
+
+    </script>
   </body>
 </html>
