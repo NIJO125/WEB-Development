@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>repl.it</title>
+   <style>
+     body{
+       margin:0;
+       padding:0;
+
+     }
+     canvas{
+       background:#000;
+
+     }
+     </style>
+     <body>
+     <canvas id="canvas"></canvas>
+     <script>
+       
+     window.onload = () => {
+  let canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+  w = canvas.width = innerWidth;
+  h = canvas.height = innerHeight;
+  
+  let colors = ["#F8B195","#F67280","#C06C84","#6C5B7B","#355C7D"];
+  ctx.translate(w/2,h/2);
+  
+  let i=0;
+  /*Change the value of the below variable and generate different pattern.*/
+  let di = Math.floor(Math.random()*4 + 1), rad = Math.floor(Math.random()*90 + 9);
+  
+  let draw = () => {
+    
+    /*Change the value of the below variable and generate different pattern.*/
+    let x1 = 0, y1 = 0, x2 = i, y2 = 0;
+    
+    ctx.beginPath();
+    ctx.strokeStyle = colors[i%5];
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.lineWidth = i/100+1;
+    ctx.stroke();
+    ctx.closePath();
+    ctx.translate(i,0);
+    ctx.rotate(rad);
+    i += di;
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  
+}
+
+
+
+     
+    </script>
+  </body>
+</html>
